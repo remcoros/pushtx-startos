@@ -23,10 +23,10 @@ assets:
 main:
   type: docker
   image: main
-  entrypoint: "docker_entrypoint.sh"
+  entrypoint: "/app/docker_entrypoint.sh"
   args: []
   mounts:
-    main: /root/data
+    main: /home/app
   gpu-acceleration: false
 hardware-requirements:
   arch:
@@ -54,15 +54,21 @@ interfaces:
     lan-config:
       443:
         ssl: true
-        internal: 80
+        internal: 8080
     tor-config:
       port-mapping:
-        80: "80"
-    ui: true
+        80: "8080"
+    ui: false
     protocols:
       - tcp
       - http
-dependencies: {}
+dependencies:
+  bitcoind:
+    version: ">=0.21.1.2 <29.0.0"
+    requirement:
+      type: "opt-out"
+      how: "Set 'Use custom Bitcoin node' to Enabled"
+    description: Use your own node for NFC Push TX
 backup:
   create:
     type: docker
@@ -73,10 +79,10 @@ backup:
       - duplicity
       - create
       - /mnt/backup
-      - /root/data
+      - /home/app
     mounts:
       BACKUP: /mnt/backup
-      main: /root/data
+      main: /home/app
   restore:
     type: docker
     image: compat
@@ -86,10 +92,10 @@ backup:
       - duplicity
       - restore
       - /mnt/backup
-      - /root/data
+      - /home/app
     mounts:
       BACKUP: /mnt/backup
-      main: /root/data
+      main: /home/app
 migrations:
   from:
     "*":

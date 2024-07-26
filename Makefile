@@ -40,7 +40,7 @@ clean:
 scripts/embassy.js: $(TS_FILES)
 	deno bundle scripts/embassy.ts scripts/embassy.js
 
-docker-images/aarch64.tar: manifest.yaml Dockerfile docker_entrypoint.sh assets/nginx.conf
+docker-images/aarch64.tar: manifest.yaml Dockerfile docker_entrypoint.sh
 ifeq ($(ARCH),x86_64)
 else
 	mkdir -p docker-images
@@ -51,7 +51,7 @@ else
 		--platform=linux/arm64 -o type=docker,dest=docker-images/aarch64.tar .
 endif
 
-docker-images/x86_64.tar: manifest.yaml Dockerfile docker_entrypoint.sh assets/nginx.conf
+docker-images/x86_64.tar: manifest.yaml Dockerfile docker_entrypoint.sh
 ifeq ($(ARCH),aarch64)
 else
 	mkdir -p docker-images

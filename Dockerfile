@@ -5,14 +5,6 @@ ARG PLATFORM
 ARG YQ_VERSION
 ARG YQ_SHA
 
-WORKDIR /app
-
-COPY ./src /app
-
-RUN \
-  dotnet restore && \
-  dotnet publish -c Release -o out
-
 # Install necessary packages
 RUN \
   apt-get update && \
@@ -29,10 +21,18 @@ RUN \
   echo "${YQ_SHA} /tmp/yq" | sha256sum -c || exit 1 && \ 
   mv /tmp/yq /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
-FROM mcr.microsoft.com/dotnet/runtime:8.0-bookworm-slim
+WORKDIR /app
+
+COPY ./src/PushTX .
+  
+RUN \
+    dotnet restore && \
+    dotnet publish -c Release -o out
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
 
 WORKDIR /app
 
 COPY --from=build /app/out /app
 COPY --from=build /usr/local/bin/yq /usr/local/bin/yq
-COPY ./docker_entrypoint.sh /usr/local/bin/docker_entrypoint.sh
+COPY --chmod=755 ./docker_entrypoint.sh /app/docker_entrypoint.sh

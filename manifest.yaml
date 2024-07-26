@@ -1,0 +1,101 @@
+id: pushtx
+title: "NFC Push TX"
+version: 0.1.0
+release-notes: |
+  * Initial release of NFC Push TX
+license: MIT
+wrapper-repo: "https://github.com/remcoros/pushtx-startos"
+upstream-repo: "https://github.com/remcoros/pushtx-startos"
+support-site: "https://github.com/remcoros/pushtx-startos/issues"
+marketing-site: "https://pushtx.org/"
+donation-url: "https://lnpay.me"
+build: ["make"]
+description:
+  short: NFC Push TX allows single-tap broadcast of freshly-signed transactions from a COLDCARD and hopefully others soon(tm)
+  long: |
+    Once enabled with a URL, the COLDCARD will show the NFC animation after signing the transaction. When the user taps their phone, 
+    the phone will see an NFC tag with URL inside. That URL contains the signed transaction ready to go, and once opening in the mobile 
+    browser of the phone, that URL will load. The page will connect to your Bitcoin node and send the transaction on the public Bitcoin network.
+assets:
+  license: LICENSE
+  icon: icon.png
+  instructions: instructions.md
+main:
+  type: docker
+  image: main
+  entrypoint: "docker_entrypoint.sh"
+  args: []
+  mounts:
+    main: /root/data
+  gpu-acceleration: false
+hardware-requirements:
+  arch:
+    - x86_64
+    - aarch64
+health-checks:
+  app-ui:
+    name: NFC Push TX User Interface
+    success-message: Ready to be visited in a web browser
+    type: script
+config:
+  get:
+    type: script
+  set:
+    type: script
+properties:
+  type: script
+volumes:
+  main:
+    type: data
+interfaces:
+  main:
+    name: NFC Push TX UI
+    description: NFC Push TX user interface
+    lan-config:
+      443:
+        ssl: true
+        internal: 80
+    tor-config:
+      port-mapping:
+        80: "80"
+    ui: true
+    protocols:
+      - tcp
+      - http
+dependencies: {}
+backup:
+  create:
+    type: docker
+    image: compat
+    system: true
+    entrypoint: compat
+    args:
+      - duplicity
+      - create
+      - /mnt/backup
+      - /root/data
+    mounts:
+      BACKUP: /mnt/backup
+      main: /root/data
+  restore:
+    type: docker
+    image: compat
+    system: true
+    entrypoint: compat
+    args:
+      - duplicity
+      - restore
+      - /mnt/backup
+      - /root/data
+    mounts:
+      BACKUP: /mnt/backup
+      main: /root/data
+migrations:
+  from:
+    "*":
+      type: script
+      args: ["from"]
+  to:
+    "*":
+      type: script
+      args: ["to"]

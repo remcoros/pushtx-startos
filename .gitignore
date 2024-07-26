@@ -1,0 +1,10 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+.idea
+*.s9pk
+.vscode/
+scripts/*.js
+docker-images

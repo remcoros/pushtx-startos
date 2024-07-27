@@ -27,6 +27,7 @@ main:
   args: []
   mounts:
     main: /home/app
+    cert: /mnt/cert
   gpu-acceleration: false
 hardware-requirements:
   arch:
@@ -47,6 +48,9 @@ properties:
 volumes:
   main:
     type: data
+  cert:
+    type: certificate
+    interface-id: main
 interfaces:
   main:
     name: NFC Push TX UI
@@ -57,7 +61,7 @@ interfaces:
         internal: 8080
     tor-config:
       port-mapping:
-        80: "8080"
+        443: "443"
     ui: false
     protocols:
       - tcp

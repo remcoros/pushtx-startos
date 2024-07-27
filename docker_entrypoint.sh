@@ -18,5 +18,30 @@ else
     echo "Use custom Bitcoin Core node: $RPC_USERNAME@$RPC_HOST"
 fi
 
+# Run nginx
+NGINX_CONF='
+server {
+    listen 443 ssl;
+    ssl_certificate /mnt/cert/main.cert.pem;
+    ssl_certificate_key /mnt/cert/main.key.pem;
+    server_name  localhost;
+
+    location / {
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_redirect off;
+      proxy_pass http://0.0.0.0:8080;
+    }
+}
+'
+
+echo "$NGINX_CONF" > /etc/nginx/http.d/default.conf
+#sed -i "s#ssl_protocols TLSv1.1#ssl_protocols#g" /etc/nginx/nginx.conf
+
+nginx -g 'daemon off;' &
+
 cd /app
 dotnet PushTX.dll

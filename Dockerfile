@@ -31,6 +31,14 @@ RUN \
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
 
+RUN apk update && \
+    apk add --no-cache \
+    nginx \
+    rm -rf \
+    /tmp/* \
+    /var/cache/apk/* \
+    /var/tmp/*
+
 WORKDIR /app
 
 COPY --from=build /app/out /app

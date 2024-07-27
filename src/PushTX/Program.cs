@@ -72,8 +72,8 @@ app.MapPost("/api/tx", async (
     }
     catch (Exception ex)
     {
-        var error = $"error sending request to bitcoin rpc api: {ex.Message}";
-        return Results.Content(error, statusCode: StatusCodes.Status500InternalServerError);
+        log.LogError(ex, "failed to send transaction: {Message}", ex.Message);
+        return Results.Content(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
     }
 });
 
@@ -181,7 +181,7 @@ app.MapGet("/api/tx/{txid}", async (
     }
     catch (Exception ex)
     {
-        log.LogError("error sending request to bitcoin rpc api: {Message}", ex.ToString());
+        log.LogError(ex, "failed to get transaction data: {Message}", ex.Message);
         return Results.Content(ex.Message, statusCode: StatusCodes.Status500InternalServerError);
     }
 });
@@ -388,4 +388,3 @@ public class MempoolConfirmedStatus(bool confirmed, int blockHeight)
     [JsonPropertyName("block_height")]
     public int BlockHeight { get; set; } = blockHeight;
 }
-

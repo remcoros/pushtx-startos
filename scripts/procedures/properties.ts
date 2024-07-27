@@ -47,7 +47,7 @@ export const properties: T.ExpectedExports.properties = async (
       data: {
         "NFC Push TX Url (Tor)": {
           type: "string",
-          value: `http://${config["tor-address"]}#`,
+          value: `https://${config["tor-address"]}#`,
           description: "Use this link to setup NFC Push TX over Tor.",
           copyable: true,
           qr: true,

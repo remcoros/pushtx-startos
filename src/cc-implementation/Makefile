@@ -4,7 +4,7 @@ install:
 
 .PHONY: build
 build: install
-	npm run build && PUSHTX_SINGLE_FILE=1 npm run build
+	npm run build
 
 # hash and sign all important files - both the source and built versions
 .PHONY: sign

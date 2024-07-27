@@ -1,6 +1,7 @@
 PKG_ID := $(shell yq e ".id" manifest.yaml)
 PKG_VERSION := $(shell yq e ".version" manifest.yaml)
 TS_FILES := $(shell find ./scripts -name \*.ts)
+SOURCES := $(shell find ./src ! -path "*/obj/*" ! -path "*/bin/*" ! -path "*/node_modules/*")
 
 # sha256 hashes can be found in https://github.com/mikefarah/yq/releases/download/v4.40.7/checksums-bsd
 YQ_VERSION := 4.40.7
@@ -40,7 +41,7 @@ clean:
 scripts/embassy.js: $(TS_FILES)
 	deno bundle scripts/embassy.ts scripts/embassy.js
 
-docker-images/aarch64.tar: manifest.yaml Dockerfile docker_entrypoint.sh
+docker-images/aarch64.tar: manifest.yaml Dockerfile docker_entrypoint.sh $(SOURCES)
 ifeq ($(ARCH),x86_64)
 else
 	mkdir -p docker-images
@@ -51,7 +52,7 @@ else
 		--platform=linux/arm64 -o type=docker,dest=docker-images/aarch64.tar .
 endif
 
-docker-images/x86_64.tar: manifest.yaml Dockerfile docker_entrypoint.sh
+docker-images/x86_64.tar: manifest.yaml Dockerfile docker_entrypoint.sh $(SOURCES)
 ifeq ($(ARCH),aarch64)
 else
 	mkdir -p docker-images

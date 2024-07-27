@@ -21,6 +21,15 @@ using System.Text.Json.Nodes;
  */
 var builder = WebApplication.CreateSlimBuilder(args);
 
+// only use a simple console logger
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(x =>
+{
+    x.SingleLine = true;
+});
+builder.Services.AddSingleton(sp => sp.GetRequiredService<ILoggerFactory>().CreateLogger("PushTX"));
+
+// simple json-rpc client
 builder.Services.AddHttpClient<RpcClient>();
 
 // this will throw when RPC_HOST / RPC_USERNAME / RPC_PASSWORD are not set
@@ -41,7 +50,7 @@ app.UseStaticFiles();
 // returns: a transaction id (string)
 app.MapPost("/api/tx", async (
     HttpContext context,
-    [FromServices] ILogger<Program> log,
+    [FromServices] ILogger log,
     [FromServices] RpcClient rpcClient,
     [FromServices] RpcSettings settings) =>
 {
@@ -81,7 +90,7 @@ app.MapPost("/api/tx", async (
 // returns: mempool.space compatible transaction result (json)
 app.MapGet("/api/tx/{txid}", async (
     HttpContext context,
-    [FromServices] ILogger<Program> log,
+    [FromServices] ILogger log,
     [FromServices] RpcClient rpcClient,
     [FromServices] RpcSettings settings,
     [FromRoute] string txid) =>
@@ -189,6 +198,11 @@ app.MapGet("/api/tx/{txid}", async (
 /*
  * Run it!
  */
+var log = app.Services.GetRequiredService<ILogger>();
+
+app.Services.GetRequiredService<IHostApplicationLifetime>()
+    .ApplicationStarted.Register(() => log.LogInformation("Application started."));
+
 app.Run();
 
 /*
@@ -338,6 +352,9 @@ public class RpcSettings
     }
 }
 
+/*
+ * mempool.space api like compatible models
+ */
 public class MempoolTxData(string txid, MempoolTxDataVin[] vin, MempoolTxDataVout[] vout, MempoolConfirmedStatus status)
 {
     [JsonPropertyName("txid")]

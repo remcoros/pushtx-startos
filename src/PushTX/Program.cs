@@ -118,14 +118,16 @@ app.MapGet("/api/tx/{txid}", async (
 
         // query tx data for all inputs to get address and value
         var vins = rpcResult["vin"]?.AsArray() ?? [];
-        foreach (var vin in vins.OfType<JsonObject>())
+
+        // get previous output data of all inputs in paralell
+        await Parallel.ForEachAsync(vins.OfType<JsonObject>(), async (vin, token) =>
         {
             var vinTxid = (string)vin["txid"]!;
             var vout = (int)vin["vout"]!;
 
             if (string.IsNullOrEmpty(vinTxid) || vout < 0)
             {
-                continue;
+                return;
             }
 
             var getVinTx = new RpcRequest<JsonObject>
@@ -141,7 +143,7 @@ app.MapGet("/api/tx/{txid}", async (
                 // add 'prevout' properties to match mempool.space api
                 vin["prevout"] = vinResult["vout"]![vout]!.DeepClone();
             }
-        }
+        });
 
         // map BTC Core result to mempool.space api result
         // map inputs
@@ -165,7 +167,7 @@ app.MapGet("/api/tx/{txid}", async (
                     (int)((decimal)vout["value"]! * 1e8m)))
             .ToArray();
 
-        // if we have a blockhash, transaction is confirmed and we can get the block height
+        // if we have a blockhash, transaction is confirmed and we can query for the block info to get height
         var blockHeight = 0;
         var blockHash = rpcResult["blockhash"]?.GetValue<string>();
         if (!string.IsNullOrEmpty(blockHash))

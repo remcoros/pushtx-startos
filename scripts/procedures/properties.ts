@@ -45,7 +45,7 @@ export const properties: T.ExpectedExports.properties = async (
     result: {
       version: 2,
       data: {
-        "NFC Push TX Url (Tor)": {
+        "Tor Url": {
           type: "string",
           value: `https://${config["tor-address"]}#`,
           description: "Use this link to setup NFC Push TX over Tor.",
@@ -53,10 +53,10 @@ export const properties: T.ExpectedExports.properties = async (
           qr: true,
           masked: false,
         },
-        "NFC Push TX Url (Lan)": {
+        "LAN Url": {
           type: "string",
           value: `https://${config["lan-address"]}#`,
-          description: "Use this link to setup NFC Push TX over Lan.",
+          description: "Use this link to setup NFC Push TX over LAN.",
           copyable: true,
           qr: true,
           masked: false,

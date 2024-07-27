@@ -1,7 +1,6 @@
-import { boolean } from "https://deno.land/x/ts_matches@v5.4.1/mod.ts";
-import { compat, types as T } from "../deps.ts";
+import { compat } from "../deps.ts";
 
-export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
+export const [getConfig, setConfigMatcher] = compat.getConfigAndMatcher({
   "tor-address": {
     name: "Tor Address",
     description: "The Tor address for the main ui.",
@@ -88,3 +87,5 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
     },
   },
 });
+
+export type Config = typeof setConfigMatcher._TYPE;

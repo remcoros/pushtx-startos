@@ -1,4 +1,9 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine as build
+# QEMU crashes when building arm64 container, so we use this pattern to create a multi-platform build:
+# https://devblogs.microsoft.com/dotnet/improving-multiplatform-container-support/
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+
+# implicitly set by docker build
+ARG TARGETARCH
 
 # install nodejs/npm to build cc-implementation
 RUN apk update && apk add --no-cache nodejs npm
@@ -13,11 +18,11 @@ RUN \
     npm install && \
     npm run build
 
-# compile PushTX app
+# compile PushTX app for target architecture (arm64/amd64)
 RUN \
     cd /app/PushTX && \
-    dotnet restore && \
-    dotnet publish -c Release -o out
+    dotnet restore -a $TARGETARCH && \
+    dotnet publish -a $TARGETARCH --no-restore -c Release -o out
 
 # start from aspnet runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine

@@ -3,11 +3,6 @@ PKG_VERSION := $(shell yq e ".version" manifest.yaml)
 TS_FILES := $(shell find ./scripts -name \*.ts)
 SOURCES := $(shell find ./src ! -path "*/obj/*" ! -path "*/bin/*" ! -path "*/node_modules/*")
 
-# sha256 hashes can be found in https://github.com/mikefarah/yq/releases/download/v4.40.7/checksums-bsd
-YQ_VERSION := 4.40.7
-YQ_SHA_AMD64 := 4f13ee9303a49f7e8f61e7d9c87402e07cc920ae8dfaaa8c10d7ea1b8f9f48ed
-YQ_SHA_ARM64 := a84f2c8f105b70cd348c3bf14048aeb1665c2e7314cbe9aaff15479f268b8412
-
 .DELETE_ON_ERROR:
 
 all: verify
@@ -46,9 +41,6 @@ ifeq ($(ARCH),x86_64)
 else
 	mkdir -p docker-images
 	docker buildx build --tag start9/$(PKG_ID)/main:$(PKG_VERSION) \
-		--build-arg PLATFORM=arm64 \
-		--build-arg YQ_VERSION=$(YQ_VERSION) \
-		--build-arg YQ_SHA=$(YQ_SHA_ARM64) \
 		--platform=linux/arm64 -o type=docker,dest=docker-images/aarch64.tar .
 endif
 
@@ -57,9 +49,6 @@ ifeq ($(ARCH),aarch64)
 else
 	mkdir -p docker-images
 	docker buildx build --tag start9/$(PKG_ID)/main:$(PKG_VERSION) \
-		--build-arg PLATFORM=amd64 \
-		--build-arg YQ_VERSION=$(YQ_VERSION) \
-		--build-arg YQ_SHA=$(YQ_SHA_AMD64) \
 		--platform=linux/amd64 -o type=docker,dest=docker-images/x86_64.tar .
 endif
 

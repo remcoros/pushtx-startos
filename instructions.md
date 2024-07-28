@@ -10,4 +10,4 @@ This feature is available on Q and Mk4 and requires NFC to be enabled. On your C
 
 When enabling NFC Push TX in the Coldcard, you can use the QR scanner to scan the correct URL from the 'Properties' page in StartOS (click on the QR icon to show the QR code of the LAN or Tor url).
 
-    Note: do not use the URL from the 'Interfaces' page! Use the Tor or LAN url from the 'Properties' page instead. The url must end with a hashtag (#).
+**Note:** do not use the URL from the 'Interfaces' page! Use the Tor or LAN url from the 'Properties' page instead. The url must end with a hashtag (#).

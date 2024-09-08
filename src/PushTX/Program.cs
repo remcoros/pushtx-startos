@@ -145,6 +145,9 @@ app.MapGet("/api/tx/{txid}", async (
             }
         });
 
+        // factor to multiply values with (BTC > SATS)
+        const decimal sats = 100_000_000m;
+
         // map BTC Core result to mempool.space api result
         // map inputs
         var mempoolVin = rpcResult["vin"]!.AsArray().OfType<JsonObject>()
@@ -153,7 +156,7 @@ app.MapGet("/api/tx/{txid}", async (
                 var prevout = new MempoolTxDataVout(
                         (string)vin["prevout"]!["scriptPubKey"]!["hex"]!,
                         (string)vin["prevout"]!["scriptPubKey"]!["address"]!,
-                        (int)((decimal)vin["prevout"]!["value"]! * 1e8m));
+                        (decimal)vin["prevout"]!["value"]! * sats);
                 return new MempoolTxDataVin((string)vin["txid"]!, (int)vin["vout"]!, prevout);
             })
             .ToArray();
@@ -164,7 +167,7 @@ app.MapGet("/api/tx/{txid}", async (
                 new MempoolTxDataVout(
                     (string)vout["scriptPubKey"]!["hex"]!,
                     (string)vout["scriptPubKey"]!["address"]!,
-                    (int)((decimal)vout["value"]! * 1e8m)))
+                    (decimal)vout["value"]! * sats))
             .ToArray();
 
         // if we have a blockhash, transaction is confirmed and we can query for the block info to get height
@@ -363,7 +366,7 @@ public class MempoolTxData(string txid, MempoolTxDataVin[] vin, MempoolTxDataVou
     public string Txid { get; set; } = txid;
 
     [JsonPropertyName("fee")]
-    public int Fee => Vin.Sum(x => x.Prevout.Value) - Vout.Sum(x => x.Value);
+    public decimal Fee => Vin.Sum(x => x.Prevout.Value) - Vout.Sum(x => x.Value);
 
     [JsonPropertyName("status")]
     public MempoolConfirmedStatus Status { get; set; } = status;
@@ -387,7 +390,7 @@ public class MempoolTxDataVin(string txid, int vout, MempoolTxDataVout prevout)
     public MempoolTxDataVout Prevout { get; set; } = prevout;
 }
 
-public class MempoolTxDataVout(string scriptPubkey, string scriptPubkeyAddress, int value)
+public class MempoolTxDataVout(string scriptPubkey, string scriptPubkeyAddress, decimal value)
 {
     [JsonPropertyName("scriptpubkey")]
     public string ScriptPubkey { get; set; } = scriptPubkey;
@@ -396,7 +399,7 @@ public class MempoolTxDataVout(string scriptPubkey, string scriptPubkeyAddress, 
     public string ScriptPubkeyAddress { get; set; } = scriptPubkeyAddress;
 
     [JsonPropertyName("value")]
-    public int Value { get; set; } = value;
+    public decimal Value { get; set; } = value;
 }
 
 public class MempoolConfirmedStatus(bool confirmed, int blockHeight)

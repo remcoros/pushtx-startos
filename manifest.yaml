@@ -1,8 +1,8 @@
 id: pushtx
 title: "NFC Push TX"
-version: 1.0.0
+version: 1.0.1
 release-notes: |
-  * Initial release of NFC Push TX
+  * Fix minor issue fetching transaction data for larger amounts
 license: MIT
 wrapper-repo: "https://github.com/remcoros/pushtx-startos"
 upstream-repo: "https://github.com/remcoros/pushtx-startos"

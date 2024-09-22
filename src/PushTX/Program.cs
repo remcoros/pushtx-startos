@@ -204,9 +204,15 @@ app.MapGet("/api/tx/{txid}", async (
  * Run it!
  */
 var log = app.Services.GetRequiredService<ILogger>();
+var settings = app.Services.GetRequiredService<RpcSettings>();
+
+log.LogInformation("Configured RPC server: {Username}@{Host}", settings.Username, settings.Host);
 
 app.Services.GetRequiredService<IHostApplicationLifetime>()
-    .ApplicationStarted.Register(() => log.LogInformation("Application started."));
+    .ApplicationStarted.Register(() =>
+    {
+        log.LogInformation("Application started.");
+    });
 
 app.Run();
 

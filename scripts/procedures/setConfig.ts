@@ -7,9 +7,12 @@ export const setConfig: T.ExpectedExports.setConfig = async (
 ) => {
   const config: Config = setConfigMatcher.unsafeCast(input);
   const depsBitcoind: { [key: string]: string[] } =
-    config.advanced.use_custom_node === true ? {} : { "bitcoind": [] };
+    config.node.type === "mainnet" ? { "bitcoind": [] } : {};
+    const depsBitcoindTestnet: { [key: string]: string[] } =
+    config.node.type === "testnet" ? { "bitcoind-testnet": [] } :{};
 
   return await compat.setConfig(effects, config, {
     ...depsBitcoind,
+    ...depsBitcoindTestnet
   });
 };

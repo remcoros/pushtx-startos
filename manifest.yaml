@@ -1,8 +1,9 @@
 id: pushtx
 title: "NFC Push TX"
-version: 1.0.1
+version: 1.1.0
 release-notes: |
-  * Fix minor issue fetching transaction data for larger amounts
+  * Updated config option for selecting bitcoin node to fix issue with StartOS dependency (Bitcoin Core) detection when using a custom node.
+  * Added Bitcoin Core (testnet4) to node options.
 license: MIT
 wrapper-repo: "https://github.com/remcoros/pushtx-startos"
 upstream-repo: "https://github.com/remcoros/pushtx-startos"
@@ -72,7 +73,13 @@ dependencies:
     version: ">=0.21.1.2 <29.0.0"
     requirement:
       type: "opt-out"
-      how: "Set 'Use custom Bitcoin node' to Enabled"
+      how: "Set 'Bitcoin node' to choose a different node"
+    description: Use your own node for NFC Push TX
+  bitcoind-testnet:
+    version: ">=0.21.1.2 <29.0.0"
+    requirement:
+      type: "opt-in"
+      how: "Set 'Bitcoin node' to choose a different node"
     description: Use your own node for NFC Push TX
 backup:
   create:

@@ -6,17 +6,30 @@ echo
 echo "Starting NFC Push TX..."
 echo
 
-if [ $(yq e '.advanced.use_custom_node' /home/app/start9/config.yaml) = "false" ]; then
+case "$(yq e '.node.type' /home/app/start9/config.yaml)" in
+"mainnet")
     export RPC_HOST="http://bitcoind.embassy:8332"
-    export RPC_USERNAME=$(yq e '.bitcoind_rpcusername' /home/app/start9/config.yaml)
-    export RPC_PASSWORD=$(yq e '.bitcoind_rpcpassword' /home/app/start9/config.yaml)
+    export RPC_USERNAME=$(yq e '.node.user' /home/app/start9/config.yaml)
+    export RPC_PASSWORD=$(yq e '.node.password' /home/app/start9/config.yaml)
     echo "Use built-in Bitcoin Core node: $RPC_USERNAME@$RPC_HOST"
-else
-    export RPC_HOST=$(yq e '.advanced.custom_rpchost' /home/app/start9/config.yaml)
-    export RPC_USERNAME=$(yq e '.advanced.custom_rpcusername' /home/app/start9/config.yaml)
-    export RPC_PASSWORD=$(yq e '.advanced.custom_rpcpassword' /home/app/start9/config.yaml)
+    ;;
+"testnet")
+    export RPC_HOST="http://bitcoind-testnet.embassy:48332"
+    export RPC_USERNAME=$(yq e '.node.user' /home/app/start9/config.yaml)
+    export RPC_PASSWORD=$(yq e '.node.password' /home/app/start9/config.yaml)
+    echo "Use built-in Bitcoin Core (testnet4) node: $RPC_USERNAME@$RPC_HOST"
+    ;;
+"custom")
+    export RPC_HOST=$(yq e '.node.host' /home/app/start9/config.yaml)
+    export RPC_USERNAME=$(yq e '.node.user' /home/app/start9/config.yaml)
+    export RPC_PASSWORD=$(yq e '.node.password' /home/app/start9/config.yaml)
     echo "Use custom Bitcoin Core node: $RPC_USERNAME@$RPC_HOST"
-fi
+    ;;
+*)
+    echo "Unknown node selected"
+    exit 1
+    ;;
+esac
 
 # Run nginx
 NGINX_CONF='

@@ -6,5 +6,9 @@ riderModule.iml
 .idea
 *.s9pk
 .vscode/
+.DS_Store
 scripts/*.js
 docker-images
+node_modules
+javascript/*
+ncc-cache

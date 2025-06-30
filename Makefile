@@ -1,37 +1,52 @@
-PKG_ID := $(shell yq e ".id" manifest.yaml)
-PKG_VERSION := $(shell yq e ".version" manifest.yaml)
-TS_FILES := $(shell find ./scripts -name \*.ts)
-SOURCES := $(shell find ./src ! -path "*/obj/*" ! -path "*/bin/*" ! -path "*/node_modules/*")
+PACKAGE_ID := $(shell grep -o "id: '[^']*'" startos/manifest.ts | sed "s/id: '\([^']*\)'/\1/")
+INGREDIENTS := $(shell start-cli s9pk list-ingredients 2> /dev/null)
+
+.PHONY: all clean install check-deps check-init ingredients x86 arm
 
 .DELETE_ON_ERROR:
 
-all: verify
-
-arm:
-# this is not a typo, when building arm, remove the x86_64 image so it doesn't get packed by start-sdk
-	@rm -f docker-images/x86_64.tar
-	@ARCH=aarch64 $(MAKE)
-
-x86:
-# this is not a typo, when building x86, remove the aarch64 image so it doesn't get packed by start-sdk
-	@rm -f docker-images/aarch64.tar
-	@ARCH=x86_64 $(MAKE)
-
-verify: $(PKG_ID).s9pk
-	@start-sdk verify s9pk $(PKG_ID).s9pk
+all: ${PACKAGE_ID}.s9pk
 	@echo " Done!"
-	@echo "   Filesize: $(shell du -h $(PKG_ID).s9pk) is ready"
+	@echo " Filesize:$(shell du -h $(PACKAGE_ID).s9pk) is ready"
 
-install:
-	@if [ ! -f ~/.embassy/config.yaml ]; then echo "You must define \"host: http://server-name.local\" in ~/.embassy/config.yaml config file first."; exit 1; fi
-	@echo "\nInstalling to $$(grep -v '^#' ~/.embassy/config.yaml | cut -d'/' -f3) ...\n"
-	@[ -f $(PKG_ID).s9pk ] || ( $(MAKE) && echo "\nInstalling to $$(grep -v '^#' ~/.embassy/config.yaml | cut -d'/' -f3) ...\n" )
-	@start-cli package install $(PKG_ID).s9pk
+check-deps:
+	@if ! command -v start-cli > /dev/null; then \
+		echo "Error: start-cli not found. Please install it first."; \
+		exit 1; \
+	fi
+	@if ! command -v npm > /dev/null; then \
+		echo "Error: npm (Node Package Manager) not found. Please install Node.js and npm."; \
+		exit 1; \
+	fi
+
+check-init:
+	@if [ ! -f ~/.startos/developer.key.pem ]; then \
+		start-cli init; \
+	fi
+
+ingredients: $(INGREDIENTS)
+	@echo "Re-evaluating ingredients..."
+
+${PACKAGE_ID}.s9pk: $(INGREDIENTS) | check-deps check-init
+	@$(MAKE) --no-print-directory ingredients
+	start-cli s9pk pack
+
+javascript/index.js: $(shell git ls-files startos) tsconfig.json node_modules package.json
+	npm run build
+
+assets:
+	mkdir -p assets
+
+node_modules: package-lock.json
+	npm ci
+
+package-lock.json: package.json
+	npm i
 
 clean:
-	rm -rf docker-images
-	rm -f $(PKG_ID).s9pk
-	rm -f scripts/*.js
+	rm -rf ${PACKAGE_ID}.s9pk
+	rm -rf javascript
+	rm -rf node_modules
 
 scripts/embassy.js: $(TS_FILES)
 	deno run --allow-read --allow-write --allow-env --allow-net scripts/bundle.ts

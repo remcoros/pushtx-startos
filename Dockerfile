@@ -1,6 +1,6 @@
 # QEMU crashes when building arm64 container, so we use this pattern to create a multi-platform build:
 # https://devblogs.microsoft.com/dotnet/improving-multiplatform-container-support/
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 
 # implicitly set by docker build
 ARG TARGETARCH
@@ -25,18 +25,8 @@ RUN \
     dotnet publish -a $TARGETARCH --no-restore -c Release -o out
 
 # start from aspnet runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
-
-# install nginx and yq
-RUN \
-    apk update && \
-    apk add --no-cache nginx yq && \
-    rm -rf \
-      /tmp/* \
-      /var/cache/apk/* \
-      /var/tmp/*
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine
 
 WORKDIR /app
 
-COPY --chmod=755 ./docker_entrypoint.sh /app/docker_entrypoint.sh
 COPY --from=build /app/PushTX/out /app

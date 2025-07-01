@@ -41,12 +41,12 @@ export const manifest = setupManifest({
     bitcoind: {
       description: 'Used to connect to your Bitcoin node.',
       optional: true,
-      s9pk: 'https://github.com/Start9Labs/bitcoind-startos/releases/download/v28.1.0.3-alpha.4/bitcoind.s9pk',
+      s9pk: null,
     },
     'bitcoind-testnet': {
       description: 'Used to connect to your Bitcoin node.',
       optional: true,
-      s9pk: 'https://github.com/Start9Labs/bitcoind-startos/releases/download/v28.1.0.3-alpha.4/bitcoind.s9pk',
+      s9pk: null,
     },
   },
 })

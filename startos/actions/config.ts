@@ -6,67 +6,65 @@ import { Variants } from '@start9labs/start-sdk/base/lib/actions/input/builder'
 const { InputSpec, Value } = sdk
 
 export const inputSpec = InputSpec.of({
-  server: Value.dynamicUnion(
-    async ({ effects }) => {
-      // determine default server type and disabled options
-      const installedPackages = await effects.getInstalledPackages()
-      let serverType: 'mainnet' | 'testnet' | 'custom' = 'custom'
+  server: Value.dynamicUnion(async ({ effects }) => {
+    // determine default server type and disabled options
+    const installedPackages = await effects.getInstalledPackages()
+    let serverType: 'mainnet' | 'testnet' | 'custom' = 'custom'
 
-      if (installedPackages.includes('bitcoind')) {
-        serverType = 'mainnet'
-      } else if (installedPackages.includes('bitcoind-testnet')) {
-        serverType = 'testnet'
-      } else {
-        serverType = 'custom'
-      }
+    if (installedPackages.includes('bitcoind')) {
+      serverType = 'mainnet'
+    } else if (installedPackages.includes('bitcoind-testnet')) {
+      serverType = 'testnet'
+    } else {
+      serverType = 'custom'
+    }
 
-      return {
-        name: 'Server',
-        description: 'Bitcoin/Electrum Server',
-        default: serverType,
-        disabled: false,
-      }
-    },
-    Variants.of({
-      mainnet: {
-        name: 'Bitcoin Core',
-        spec: InputSpec.of({}),
-      },
-      testnet: {
-        name: 'Bitcoin Core (testnet4)',
-        spec: InputSpec.of({}),
-      },
-      custom: {
-        name: 'Custom',
-        spec: InputSpec.of({
-          host: Value.text({
-            name: 'Hostname',
-            description: 'RPC hostname for your Bitcoin node.',
-            required: true,
-            default: '',
-            placeholder: '',
-            masked: false,
+    return {
+      name: 'Server',
+      description: 'Bitcoin/Electrum Server',
+      default: serverType,
+      disabled: false,
+      variants: Variants.of({
+        mainnet: {
+          name: 'Bitcoin Core',
+          spec: InputSpec.of({}),
+        },
+        testnet: {
+          name: 'Bitcoin Core (testnet4)',
+          spec: InputSpec.of({}),
+        },
+        custom: {
+          name: 'Custom',
+          spec: InputSpec.of({
+            host: Value.text({
+              name: 'Hostname',
+              description: 'RPC hostname for your Bitcoin node.',
+              required: true,
+              default: '',
+              placeholder: '',
+              masked: false,
+            }),
+            user: Value.text({
+              name: 'Username',
+              description: 'RPC username for your Bitcoin node.',
+              required: true,
+              default: 'bitcoin',
+              placeholder: '',
+              masked: false,
+            }),
+            password: Value.text({
+              name: 'Password',
+              description: 'RPC password for your Bitcoin node.',
+              required: true,
+              default: '',
+              placeholder: '',
+              masked: true,
+            }),
           }),
-          user: Value.text({
-            name: 'Username',
-            description: 'RPC username for your Bitcoin node.',
-            required: true,
-            default: 'bitcoin',
-            placeholder: '',
-            masked: false,
-          }),
-          password: Value.text({
-            name: 'Password',
-            description: 'RPC password for your Bitcoin node.',
-            required: true,
-            default: '',
-            placeholder: '',
-            masked: true,
-          }),
-        }),
-      },
-    }),
-  ),
+        },
+      }),
+    }
+  }),
 })
 
 export const config = sdk.Action.withInput(
@@ -120,7 +118,12 @@ async function writeSettings(effects: T.Effects, input: PartialInputSpec) {
     input.server?.selection === 'custom' ? input.server.value : undefined
   await store.merge(effects, {
     node: {
-      type: input.server?.selection ?? 'mainnet',
+      type:
+        input.server?.selection === 'mainnet'
+          ? 'mainnet'
+          : input.server?.selection === 'testnet'
+            ? 'testnet'
+            : 'custom',
       host: customValues?.host ?? '',
       user: customValues?.user ?? '',
       password: customValues?.password ?? '',

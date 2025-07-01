@@ -2,6 +2,7 @@ import os from 'os'
 import { sdk } from './sdk'
 import { parseCookie, uiPort } from './utils'
 import { store } from './fileModels/store.yaml'
+import { FileHelper } from '@start9labs/start-sdk'
 
 export const main = sdk.setupMain(async ({ effects, started }) => {
   // setup a watch on the store file for changes (this restarts the service)
@@ -22,17 +23,14 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
   })
 
   // mount the bitcoin data directory if we are using bitcoind
+  // @todo: mount just the .cookie file instead of the entire data directory
   if (conf.node.type == 'mainnet' || conf.node.type == 'testnet') {
     mounts = mounts.mountDependency({
       dependencyId:
         conf.node.type == 'mainnet' ? 'bitcoind' : 'bitcoind-testnet',
       volumeId: 'main',
-      //subpath: '.cookie',
-      //mountpoint: '/mnt/bitcoind/.cookie',
-      //type: 'file',
       subpath: null,
       mountpoint: '/mnt/bitcoind',
-      // @todo: this should be readonly, but we need to change its permissions
       readonly: true,
     })
   }
@@ -61,9 +59,11 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
         : 'bitcoind-testnet.startos'
 
     // grab the RPC username and password from the .cookie file
-    const result = (await subcontainer.exec(['cat', '/mnt/bitcoind/.cookie']))
-      .stdout as string
-    ;[RPC_USERNAME, RPC_PASSWORD] = parseCookie(result)
+    // also using .const() so that if the file changes, the service restarts
+    const cookie = await FileHelper.string(`${subcontainer.rootfs}/mnt/bitcoind/.cookie`)
+      .read()
+      .const(effects)
+    ;[RPC_USERNAME, RPC_PASSWORD] = parseCookie(cookie)
   } else {
     // custom node, use the configured values
     RPC_HOST = conf.node.host || ''

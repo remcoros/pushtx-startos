@@ -7,8 +7,9 @@ export const manifest = setupManifest({
   wrapperRepo: 'https://github.com/remcoros/pushtx-startos',
   upstreamRepo: 'https://github.com/remcoros/pushtx-startos',
   supportSite: 'https://github.com/remcoros/pushtx-startos/issues',
+  docsUrl: 'https://github.com/remcoros/pushtx-startos/blob/main/instructions.md',
   marketingSite: 'https://pushtx.org/',
-  donationUrl: 'https://lnpay.me',
+  donationUrl: 'https://github.com/remcoros/',
   description: {
     short:
       'NFC Push TX allows single-tap broadcast of freshly-signed transactions from a COLDCARD and hopefully others soon(tm)',

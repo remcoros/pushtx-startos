@@ -1,4 +1,3 @@
-import os from 'os'
 import { sdk } from './sdk'
 import { parseCookie, uiPort } from './utils'
 import { store } from './fileModels/store.yaml'
@@ -35,19 +34,16 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     })
   }
 
-  // main subcontainer (the webtop container)
-  // @todo: review this (should the service do this or can the sdk be smarter?)
-  //const imageId = os.arch() == 'x64' ? 'main' : 'main-aarch'
+  // main subcontainer
   const subcontainer = await sdk.SubContainer.of(
     effects,
     {
-      //imageId: imageId,
       imageId: 'main',
     },
     mounts,
     'main',
   )
-
+  
   let RPC_HOST = ''
   let RPC_USERNAME = ''
   let RPC_PASSWORD = ''

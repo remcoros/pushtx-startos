@@ -25,13 +25,13 @@ async function collect<T>(promise: Promise<T>): Promise<[null, T] | [Error, null
 /**
  * Convert a base64url string to a Uint8Array
  */
-function b64UrlToBytes(base64Url: string): Uint8Array {
+function b64UrlToBytes(base64Url: string): Uint8Array<ArrayBuffer> {
   const base64 = base64Url
     .replace(/-/g, '+')
     .replace(/_/g, '/')
     .padEnd(base64Url.length + ((4 - (base64Url.length % 4)) % 4), '=');
   const binaryString = atob(base64);
-  return new Uint8Array([...binaryString].map((char) => char.charCodeAt(0)));
+  return Uint8Array.from([...binaryString].map((char) => char.charCodeAt(0)));
 }
 
 /**
@@ -147,8 +147,8 @@ async function parseFragment(fragment: string) {
     throw new Error(`Invalid URL. The network "${n}" is not recognized.`);
   }
 
-  let txBytes: Uint8Array;
-  let checkBytes: Uint8Array;
+  let txBytes: Uint8Array<ArrayBuffer>;
+  let checkBytes: Uint8Array<ArrayBuffer>;
 
   try {
     txBytes = b64UrlToBytes(t);

@@ -9,13 +9,13 @@
     "preview": "npm run build && vite preview"
   },
   "devDependencies": {
-    "@types/node": "22.18.0",
+    "@types/node": "22.18.8",
     "bitcoinjs-lib": "6.1.7",
     "cipher-base": "1.0.7",
     "cross-env": "7.0.3",
     "sha.js": "2.4.12",
-    "typescript": "5.9.2",
-    "vite": "6.3.5",
+    "typescript": "5.9.3",
+    "vite": "6.3.6",
     "vite-plugin-node-polyfills": "0.24.0",
     "vite-plugin-singlefile": "2.3.0",
     "elliptic": "6.6.1",

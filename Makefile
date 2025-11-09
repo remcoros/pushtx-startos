@@ -21,7 +21,7 @@ check-deps:
 
 check-init:
 	@if [ ! -f ~/.startos/developer.key.pem ]; then \
-		start-cli init; \
+		start-cli init-key; \
 	fi
 
 ingredients: $(INGREDIENTS)

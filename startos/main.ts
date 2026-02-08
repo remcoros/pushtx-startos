@@ -2,13 +2,14 @@ import { sdk } from './sdk'
 import { parseCookie, uiPort } from './utils'
 import { store } from './fileModels/store.yaml'
 import { FileHelper } from '@start9labs/start-sdk'
+import { i18n } from './i18n'
 
-export const main = sdk.setupMain(async ({ effects, started }) => {
+export const main = sdk.setupMain(async ({ effects }) => {
   // setup a watch on the store file for changes (this restarts the service)
   const conf = await store.read().const(effects)
 
   if (!conf) {
-    throw new Error('Not configured')
+    throw new Error(i18n('Not configured'))
   }
 
   /*
@@ -70,7 +71,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
   /*
    * Daemons
    */
-  return sdk.Daemons.of(effects, started).addDaemon('primary', {
+  return sdk.Daemons.of(effects).addDaemon('primary', {
     subcontainer: subcontainer,
     exec: {
       command: ['dotnet', 'PushTX.dll'],
@@ -88,8 +89,8 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
           effects,
           'http://pushtx.startos:' + uiPort,
           {
-            successMessage: 'Push TX API is ready',
-            errorMessage: 'Push TX API is unreachable',
+            successMessage: i18n('Push TX API is ready'),
+            errorMessage: i18n('Push TX API is unreachable'),
           },
         ),
     },

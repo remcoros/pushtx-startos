@@ -23,44 +23,54 @@ export const showUrls = sdk.Action.withoutInput(
   // execution function
   async ({ effects }) => {
     const ui = await sdk.serviceInterface.getOwn(effects, 'ui').const()
-    const local_address = ui?.addressInfo?.localHostnames?.[0]?.hostname
-    const ipv4_address = ui?.addressInfo?.ipv4Hostnames?.[0]?.hostname
-    const tor_address = ui?.addressInfo?.onionHostnames?.[0]?.hostname
+    const local_addresses = ui?.addressInfo?.filter({ kind: ['mdns'] }).format('hostname-info')
+    const ipv4_addresses = ui?.addressInfo?.filter({ kind: ['ipv4'] }).format('hostname-info')
+    const tor_addresses = ui?.addressInfo?.filter({ kind: ['onion'] }).format('hostname-info')
+
+    const addresses = ui?.addressInfo?.filter({
+      kind: ['domain', 'mdns', 'ipv4', 'onion'],
+    })
 
     let results: ActionResultMember[] = []
-    if (local_address) {
-      results.push({
-        type: 'single',
-        name: 'Local URL',
-        description:
-          'Use this url to setup NFC Push TX over LAN (with mDNS/.local support).',
-        value: `https://${local_address}#`,
-        copyable: true,
-        masked: false,
-        qr: true,
-      })
+    if (local_addresses && local_addresses.length > 0) {
+      for (const address of local_addresses) {
+        results.push({
+          type: 'single',
+          name: 'Local URL',
+          description:
+            'Use this url to setup NFC Push TX over LAN (with mDNS/.local support).',
+          value: `https://${address.hostname}#`,
+          copyable: true,
+          masked: false,
+          qr: true,
+        })
+      }
     }
-    if (ipv4_address) {
-      results.push({
-        type: 'single',
-        name: 'IPv4 URL',
-        description: 'Use this url to setup NFC Push TX over LAN.',
-        value: `https://${ipv4_address}#`,
-        copyable: true,
-        masked: false,
-        qr: true,
-      })
+    if (ipv4_addresses && ipv4_addresses.length > 0) {
+      for (const address of ipv4_addresses) {
+        results.push({
+          type: 'single',
+          name: 'IPv4 URL',
+          description: 'Use this url to setup NFC Push TX over LAN.',
+          value: `https://${address.hostname}#`,
+          copyable: true,
+          masked: false,
+          qr: true,
+        })
+      }
     }
-    if (tor_address) {
-      results.push({
-        type: 'single',
-        name: 'Tor URL',
-        description: 'Use this url to setup NFC Push TX over Tor.',
-        value: `https://${tor_address}#`,
-        copyable: true,
-        masked: false,
-        qr: true,
-      })
+    if (tor_addresses && tor_addresses.length > 0) {
+      for (const address of tor_addresses) {
+        results.push({
+          type: 'single',
+          name: 'Tor URL',
+          description: 'Use this url to setup NFC Push TX over Tor.',
+          value: `https://${address.hostname}#`,
+          copyable: true,
+          masked: false,
+          qr: true,
+        })
+      }
     }
 
     if (results.length === 0) {
@@ -74,7 +84,7 @@ export const showUrls = sdk.Action.withoutInput(
         qr: false,
       })
     }
-    
+
     return {
       version: '1',
       title: 'NFC Push TX Url',

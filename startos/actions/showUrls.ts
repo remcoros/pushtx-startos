@@ -28,10 +28,11 @@ export const showUrls = sdk.Action.withoutInput(
   // execution function
   async ({ effects }) => {
     const ui = await sdk.serviceInterface.getOwn(effects, 'ui').const()
+    const addresses = ui?.addressInfo?.nonLocal
     const results: ActionResultMember[] = []
 
     // --- Public domain (clearnet domain) ---
-    const public_domain_urls = ui?.addressInfo
+    const public_domain_urls = addresses
       ?.filter({
         predicate: ({ metadata }) => metadata.kind === 'public-domain',
       })
@@ -55,7 +56,7 @@ export const showUrls = sdk.Action.withoutInput(
 
     // --- Plugin-provided addresses (Tor, Cloudflared, etc.) ---
     // Each installed plugin (identified by packageId) gets its own section.
-    const all_plugin_addresses = ui?.addressInfo
+    const all_plugin_addresses = addresses
       ?.filter({ kind: ['plugin'] })
       .format('hostname-info')
 
@@ -69,13 +70,13 @@ export const showUrls = sdk.Action.withoutInput(
         byPackage.get(pkgId)!.push(address)
       }
 
-      for (const [packageId, addresses] of byPackage) {
+      for (const [packageId, addrs] of byPackage) {
         const label = labelFromPackageId(packageId)
-        const pluginFilled = ui?.addressInfo?.filter({
+        const pluginFilled = addresses?.filter({
           predicate: (h) =>
             h.metadata.kind === 'plugin' && h.metadata.packageId === packageId,
         })
-        for (const address of addresses) {
+        for (const address of addrs) {
           const url = pluginFilled?.toUrl(address)
           if (!url) continue
           results.push({
@@ -94,7 +95,7 @@ export const showUrls = sdk.Action.withoutInput(
     }
 
     // --- mDNS (local .local addresses) ---
-    const local_urls = ui?.addressInfo
+    const local_urls = addresses
       ?.filter({ kind: ['mdns'] })
       .format()
 
@@ -114,9 +115,9 @@ export const showUrls = sdk.Action.withoutInput(
       }
     }
 
-    // --- IPv4 (public only) ---
-    const ipv4_urls = ui?.addressInfo
-      ?.filter({ kind: ['ipv4'], visibility: 'public' })
+    // --- IPv4 (LAN and WAN, excluding localhost and link-local) ---
+    const ipv4_urls = addresses
+      ?.filter({ kind: ['ipv4'] })
       .format()
 
     if (ipv4_urls && ipv4_urls.length > 0) {

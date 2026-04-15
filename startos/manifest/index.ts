@@ -66,5 +66,14 @@ export const manifest = setupManifest({
         icon: 'https://bitcoin.org/img/icons/opengraph.png',
       },
     },
+    tor: {
+      description:
+        'Required to expose a Tor onion address for Push TX. If installed, a .onion URL will be made available for NFC tap-to-broadcast over Tor.',
+      optional: true,
+      metadata: {
+        title: 'Tor',
+        icon: 'https://raw.githubusercontent.com/Start9Labs/tor-startos/65faea17febc739d910e8c26ff4e61f6333487a8/icon.svg',
+      },
+    },
   },
 })

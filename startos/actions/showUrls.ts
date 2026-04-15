@@ -1,7 +1,6 @@
 import { ActionResultMember } from '@start9labs/start-sdk/base/lib/osBindings'
 import { store } from '../fileModels/store.yaml'
 import { sdk } from '../sdk'
-import { ipv4 } from '@start9labs/start-sdk/base/lib/util/patterns'
 
 export const showUrls = sdk.Action.withoutInput(
   // id
@@ -9,7 +8,7 @@ export const showUrls = sdk.Action.withoutInput(
 
   // metadata
   async ({ effects }) => {
-    var conf = await store.read().const(effects)
+    const conf = await store.read().const(effects)
     return {
       name: 'Show Push TX URLs',
       description: 'Show the Push TX URLs',
@@ -23,14 +22,24 @@ export const showUrls = sdk.Action.withoutInput(
   // execution function
   async ({ effects }) => {
     const ui = await sdk.serviceInterface.getOwn(effects, 'ui').const()
-    const local_addresses = ui?.addressInfo?.filter({ kind: ['mdns'] }).format('hostname-info')
-    const ipv4_addresses = ui?.addressInfo?.filter({ kind: ['ipv4'] }).format('hostname-info')
+    const local_addresses = ui?.addressInfo
+      ?.filter({ kind: ['mdns'] })
+      .format('hostname-info')
+    const ipv4_addresses = ui?.addressInfo
+      ?.filter({ kind: ['ipv4'] })
+      .format('hostname-info')
 
-    const addresses = ui?.addressInfo?.filter({
-      kind: ['domain', 'mdns', 'ipv4'],
-    })
+    // Tor onion addresses are provided by the tor package via the url-v0 plugin.
+    // They appear as kind='plugin' with metadata.packageId === 'tor'.
+    const tor_addresses = ui?.addressInfo
+      ?.filter({
+        predicate: ({ metadata }) =>
+          metadata.kind === 'plugin' && metadata.packageId === 'tor',
+      })
+      .format('hostname-info')
 
-    let results: ActionResultMember[] = []
+    const results: ActionResultMember[] = []
+
     if (local_addresses && local_addresses.length > 0) {
       for (const address of local_addresses) {
         results.push({
@@ -45,6 +54,7 @@ export const showUrls = sdk.Action.withoutInput(
         })
       }
     }
+
     if (ipv4_addresses && ipv4_addresses.length > 0) {
       for (const address of ipv4_addresses) {
         results.push({
@@ -58,6 +68,22 @@ export const showUrls = sdk.Action.withoutInput(
         })
       }
     }
+
+    if (tor_addresses && tor_addresses.length > 0) {
+      for (const address of tor_addresses) {
+        results.push({
+          type: 'single',
+          name: 'Tor URL',
+          description:
+            'Use this url to setup NFC Push TX over Tor (requires the Tor package).',
+          value: `https://${address.hostname}#`,
+          copyable: true,
+          masked: false,
+          qr: true,
+        })
+      }
+    }
+
     if (results.length === 0) {
       results.push({
         type: 'single',

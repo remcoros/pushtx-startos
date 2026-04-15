@@ -1,6 +1,6 @@
 # QEMU crashes when building arm64 container, so we use this pattern to create a multi-platform build:
 # https://devblogs.microsoft.com/dotnet/improving-multiplatform-container-support/
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 
 # implicitly set by docker build
 ARG TARGETARCH
@@ -25,7 +25,7 @@ RUN \
     dotnet publish -a $TARGETARCH --no-restore -c Release -o out
 
 # start from aspnet runtime
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine
 
 WORKDIR /app
 

@@ -9,15 +9,15 @@
     "preview": "npm run build && vite preview"
   },
   "devDependencies": {
-    "@types/node": "22.18.8",
+    "@types/node": "22.19.17",
     "bitcoinjs-lib": "6.1.7",
     "cipher-base": "1.0.7",
-    "cross-env": "7.0.3",
+    "cross-env": "10.1.0",
     "sha.js": "2.4.12",
     "typescript": "5.9.3",
-    "vite": "6.3.6",
-    "vite-plugin-node-polyfills": "0.24.0",
-    "vite-plugin-singlefile": "2.3.0",
+    "vite": "6.4.2",
+    "vite-plugin-node-polyfills": "0.26.0",
+    "vite-plugin-singlefile": "2.3.2",
     "elliptic": "6.6.1",
     "pbkdf2": "3.1.5"
   }

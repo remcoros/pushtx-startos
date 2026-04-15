@@ -29,66 +29,6 @@ export const showUrls = sdk.Action.withoutInput(
     const ui = await sdk.serviceInterface.getOwn(effects, 'ui').const()
     const results: ActionResultMember[] = []
 
-    // --- mDNS (local .local addresses) ---
-    const local_addresses = ui?.addressInfo
-      ?.filter({ kind: ['mdns'] })
-      .format('hostname-info')
-
-    if (local_addresses && local_addresses.length > 0) {
-      for (const address of local_addresses) {
-        results.push({
-          type: 'single',
-          name: 'Local URL',
-          description:
-            'Use this url to setup NFC Push TX over LAN (with mDNS/.local support).',
-          value: `https://${address.hostname}#`,
-          copyable: true,
-          masked: false,
-          qr: true,
-        })
-      }
-    }
-
-    // --- IPv4 ---
-    const ipv4_addresses = ui?.addressInfo
-      ?.filter({ kind: ['ipv4'] })
-      .format('hostname-info')
-
-    if (ipv4_addresses && ipv4_addresses.length > 0) {
-      for (const address of ipv4_addresses) {
-        results.push({
-          type: 'single',
-          name: 'IPv4 URL',
-          description: 'Use this url to setup NFC Push TX over LAN.',
-          value: `https://${address.hostname}#`,
-          copyable: true,
-          masked: false,
-          qr: true,
-        })
-      }
-    }
-
-    // --- Private domain (LAN / StartOS gateway domain) ---
-    const private_domain_addresses = ui?.addressInfo
-      ?.filter({
-        predicate: ({ metadata }) => metadata.kind === 'private-domain',
-      })
-      .format('hostname-info')
-
-    if (private_domain_addresses && private_domain_addresses.length > 0) {
-      for (const address of private_domain_addresses) {
-        results.push({
-          type: 'single',
-          name: 'Private Domain URL',
-          description: 'Use this url to access Push TX via your private domain.',
-          value: `https://${address.hostname}#`,
-          copyable: true,
-          masked: false,
-          qr: true,
-        })
-      }
-    }
-
     // --- Public domain (clearnet domain) ---
     const public_domain_addresses = ui?.addressInfo
       ?.filter({
@@ -140,6 +80,45 @@ export const showUrls = sdk.Action.withoutInput(
             qr: true,
           })
         }
+      }
+    }
+
+    // --- mDNS (local .local addresses) ---
+    const local_addresses = ui?.addressInfo
+      ?.filter({ kind: ['mdns'] })
+      .format('hostname-info')
+
+    if (local_addresses && local_addresses.length > 0) {
+      for (const address of local_addresses) {
+        results.push({
+          type: 'single',
+          name: 'Local URL',
+          description:
+            'Use this url to setup NFC Push TX over LAN (with mDNS/.local support).',
+          value: `https://${address.hostname}#`,
+          copyable: true,
+          masked: false,
+          qr: true,
+        })
+      }
+    }
+
+    // --- IPv4 ---
+    const ipv4_addresses = ui?.addressInfo
+      ?.filter({ kind: ['ipv4'] })
+      .format('hostname-info')
+
+    if (ipv4_addresses && ipv4_addresses.length > 0) {
+      for (const address of ipv4_addresses) {
+        results.push({
+          type: 'single',
+          name: 'IPv4 URL',
+          description: 'Use this url to setup NFC Push TX over LAN.',
+          value: `https://${address.hostname}#`,
+          copyable: true,
+          masked: false,
+          qr: true,
+        })
       }
     }
 

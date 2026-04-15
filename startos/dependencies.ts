@@ -29,7 +29,7 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
       bitcoind: {
         kind: 'running' as const,
         healthChecks: [],
-        versionRange: '^28.1.0-0',
+        versionRange: '>=28.3:5',
       },
       ...torDep,
     }
@@ -40,7 +40,7 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
       'bitcoind-testnet': {
         kind: 'exists' as const,
         healthChecks: [],
-        versionRange: '^28.1.0-0',
+        versionRange: '>=28.3:5',
       },
       ...torDep,
     }

@@ -1,26 +1,25 @@
-import { matches, FileHelper, T } from '@start9labs/start-sdk'
+import { FileHelper, T, z } from '@start9labs/start-sdk'
 import { sdk } from '../sdk'
-const { object, string, oneOf, literal } = matches
 
-const shape = object({
-  node: object({
-    type: oneOf(
-      literal('mainnet'),
-      literal('testnet'),
-      literal('custom'),
-    ).onMismatch('mainnet'),
-    host: string.optional(),
-    user: string.optional(),
-    password: string.optional(),
+const shape = z.object({
+  node: z.object({
+    type: z
+      .union([z.literal('mainnet'), z.literal('testnet'), z.literal('custom')])
+      .catch('mainnet'),
+    host: z.string().optional(),
+    user: z.string().optional(),
+    password: z.string().optional(),
   }),
 })
 
-export type StoreType = typeof shape._TYPE
+export type StoreType = z.infer<typeof shape>
 
-export const store = FileHelper.yaml({
-  base: sdk.volumes.main,
-  subpath: 'start9/config.yaml',
-}, shape,
+export const store = FileHelper.yaml(
+  {
+    base: sdk.volumes.main,
+    subpath: 'start9/config.yaml',
+  },
+  shape,
 )
 
 export const createDefaultStore = async (effects: T.Effects) => {

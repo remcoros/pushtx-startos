@@ -25,10 +25,9 @@ export const showUrls = sdk.Action.withoutInput(
     const ui = await sdk.serviceInterface.getOwn(effects, 'ui').const()
     const local_addresses = ui?.addressInfo?.filter({ kind: ['mdns'] }).format('hostname-info')
     const ipv4_addresses = ui?.addressInfo?.filter({ kind: ['ipv4'] }).format('hostname-info')
-    const tor_addresses = ui?.addressInfo?.filter({ kind: ['onion'] }).format('hostname-info')
 
     const addresses = ui?.addressInfo?.filter({
-      kind: ['domain', 'mdns', 'ipv4', 'onion'],
+      kind: ['domain', 'mdns', 'ipv4'],
     })
 
     let results: ActionResultMember[] = []
@@ -59,20 +58,6 @@ export const showUrls = sdk.Action.withoutInput(
         })
       }
     }
-    if (tor_addresses && tor_addresses.length > 0) {
-      for (const address of tor_addresses) {
-        results.push({
-          type: 'single',
-          name: 'Tor URL',
-          description: 'Use this url to setup NFC Push TX over Tor.',
-          value: `https://${address.hostname}#`,
-          copyable: true,
-          masked: false,
-          qr: true,
-        })
-      }
-    }
-
     if (results.length === 0) {
       results.push({
         type: 'single',

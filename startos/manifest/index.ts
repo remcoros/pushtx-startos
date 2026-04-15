@@ -4,11 +4,11 @@ export const manifest = setupManifest({
   id: 'pushtx',
   title: 'NFC Push TX',
   license: 'MIT',
-  wrapperRepo: 'https://github.com/remcoros/pushtx-startos',
+  packageRepo: 'https://github.com/remcoros/pushtx-startos',
   upstreamRepo: 'https://github.com/remcoros/pushtx-startos',
   supportSite: 'https://github.com/remcoros/pushtx-startos/issues',
-  docsUrl: 'https://github.com/remcoros/pushtx-startos/blob/main/instructions.md',
-  marketingSite: 'https://pushtx.org/',
+  docsUrls: ['https://github.com/remcoros/pushtx-startos/blob/main/instructions.md'],
+  marketingUrl: 'https://pushtx.org/',
   donationUrl: 'https://github.com/remcoros/',
   description: {
     short: {

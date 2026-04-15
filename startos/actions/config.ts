@@ -2,6 +2,7 @@ import { sdk } from '../sdk'
 import { T, utils } from '@start9labs/start-sdk'
 import { createDefaultStore, store } from '../fileModels/store.yaml'
 import { Variants } from '@start9labs/start-sdk/base/lib/actions/input/builder'
+import { i18n } from '../i18n'
 
 const { InputSpec, Value } = sdk
 
@@ -11,50 +12,50 @@ export const inputSpec = InputSpec.of({
     const installedPackages = await effects.getInstalledPackages()
     let serverType: 'mainnet' | 'testnet' | 'custom' = 'custom'
 
-    if (installedPackages.includes('bitcoind')) {
-      serverType = 'mainnet'
-    } else if (installedPackages.includes('bitcoind-testnet')) {
+    if (installedPackages.includes('bitcoind-testnet')) {
       serverType = 'testnet'
+    } else if (installedPackages.includes('bitcoind')) {
+      serverType = 'mainnet'
     } else {
       serverType = 'custom'
     }
 
     return {
-      name: 'Server',
-      description: 'Bitcoin/Electrum Server',
+      name: i18n('Node'),
+      description: i18n('Bitcoin Node'),
       default: serverType,
       disabled: false,
       variants: Variants.of({
         mainnet: {
-          name: 'Bitcoin Core',
+          name: i18n('Bitcoin Core'),
           spec: InputSpec.of({}),
         },
         testnet: {
-          name: 'Bitcoin Core (testnet4)',
+          name: i18n('Bitcoin Core (testnet4)'),
           spec: InputSpec.of({}),
         },
         custom: {
-          name: 'Custom',
+          name: i18n('Custom'),
           spec: InputSpec.of({
             host: Value.text({
-              name: 'Hostname',
-              description: 'RPC hostname for your Bitcoin node.',
+              name: i18n('Hostname'),
+              description: i18n('RPC hostname for your Bitcoin node.'),
               required: true,
               default: '',
               placeholder: '',
               masked: false,
             }),
             user: Value.text({
-              name: 'Username',
-              description: 'RPC username for your Bitcoin node.',
+              name: i18n('Username'),
+              description: i18n('RPC username for your Bitcoin node.'),
               required: true,
               default: 'bitcoin',
               placeholder: '',
               masked: false,
             }),
             password: Value.text({
-              name: 'Password',
-              description: 'RPC password for your Bitcoin node.',
+              name: i18n('Password'),
+              description: i18n('RPC password for your Bitcoin node.'),
               required: true,
               default: '',
               placeholder: '',
@@ -73,8 +74,8 @@ export const config = sdk.Action.withInput(
 
   // metadata
   async ({ effects }) => ({
-    name: 'Settings',
-    description: 'Bitcoin Node settings',
+    name: i18n('Settings'),
+    description: i18n('Bitcoin Node settings'),
     warning: null,
     allowedStatuses: 'any',
     group: 'Configuration',

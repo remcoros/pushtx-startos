@@ -1,5 +1,6 @@
 import { sdk } from './sdk'
 import { uiPort } from './utils'
+import { i18n } from './i18n'
 
 export const setInterfaces = sdk.setupInterfaces(async ({ effects }) => {
   const uiMulti = sdk.MultiHost.of(effects, 'main')
@@ -9,9 +10,9 @@ export const setInterfaces = sdk.setupInterfaces(async ({ effects }) => {
   })
 
   const ui = sdk.createInterface(effects, {
-    name: 'NFC Push TX API',
+    name: i18n('NFC Push TX API'),
     id: 'ui',
-    description: 'NFC Push TX API',
+    description: i18n('NFC Push TX API'),
     type: 'api',
     schemeOverride: null,
     masked: false,    

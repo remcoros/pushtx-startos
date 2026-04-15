@@ -1,6 +1,7 @@
 import { ActionResultMember } from '@start9labs/start-sdk/base/lib/osBindings'
 import { store } from '../fileModels/store.yaml'
 import { sdk } from '../sdk'
+import { i18n } from '../i18n'
 
 // Capitalise a packageId for use as a label (e.g. 'cloudflared' → 'Cloudflared')
 function labelFromPackageId(packageId: string): string {
@@ -15,8 +16,8 @@ export const showUrls = sdk.Action.withoutInput(
   async ({ effects }) => {
     const conf = await store.read().const(effects)
     return {
-      name: 'Show Push TX URLs',
-      description: 'Show the Push TX URLs',
+      name: i18n('Show Push TX URLs'),
+      description: i18n('Show the Push TX URLs'),
       warning: null,
       allowedStatuses: 'any',
       group: 'NFC Push TX',
@@ -40,9 +41,10 @@ export const showUrls = sdk.Action.withoutInput(
       for (const address of public_domain_addresses) {
         results.push({
           type: 'single',
-          name: 'Public Domain URL',
-          description:
+          name: i18n('Public Domain URL'),
+          description: i18n(
             'Use this url to access Push TX from anywhere via your public domain.',
+          ),
           value: `https://${address.hostname}#`,
           copyable: true,
           masked: false,
@@ -73,7 +75,9 @@ export const showUrls = sdk.Action.withoutInput(
           results.push({
             type: 'single',
             name: `${label} URL`,
-            description: `Use this url to access Push TX via ${label}.`,
+            description: i18n(
+              'Use this url to access NFC Push TX via this service.',
+            ),
             value: `https://${address.hostname}#`,
             copyable: true,
             masked: false,
@@ -92,9 +96,10 @@ export const showUrls = sdk.Action.withoutInput(
       for (const address of local_addresses) {
         results.push({
           type: 'single',
-          name: 'Local URL',
-          description:
+          name: i18n('Local URL'),
+          description: i18n(
             'Use this url to setup NFC Push TX over LAN (with mDNS/.local support).',
+          ),
           value: `https://${address.hostname}#`,
           copyable: true,
           masked: false,
@@ -112,8 +117,8 @@ export const showUrls = sdk.Action.withoutInput(
       for (const address of ipv4_addresses) {
         results.push({
           type: 'single',
-          name: 'IPv4 URL',
-          description: 'Use this url to setup NFC Push TX over LAN.',
+          name: i18n('IPv4 URL'),
+          description: i18n('Use this url to setup NFC Push TX over LAN.'),
           value: `https://${address.hostname}#`,
           copyable: true,
           masked: false,
@@ -125,8 +130,8 @@ export const showUrls = sdk.Action.withoutInput(
     if (results.length === 0) {
       results.push({
         type: 'single',
-        name: 'No URLs available',
-        description: 'No URLs available for NFC Push TX.',
+        name: i18n('No URLs available'),
+        description: i18n('No URLs available for NFC Push TX.'),
         value: '',
         copyable: false,
         masked: false,
@@ -136,7 +141,7 @@ export const showUrls = sdk.Action.withoutInput(
 
     return {
       version: '1',
-      title: 'NFC Push TX Url',
+      title: i18n('NFC Push TX Url'),
       message: null,
       result: {
         type: 'group',

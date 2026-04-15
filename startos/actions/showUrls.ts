@@ -31,21 +31,21 @@ export const showUrls = sdk.Action.withoutInput(
     const results: ActionResultMember[] = []
 
     // --- Public domain (clearnet domain) ---
-    const public_domain_addresses = ui?.addressInfo
+    const public_domain_urls = ui?.addressInfo
       ?.filter({
         predicate: ({ metadata }) => metadata.kind === 'public-domain',
       })
-      .format('hostname-info')
+      .format()
 
-    if (public_domain_addresses && public_domain_addresses.length > 0) {
-      for (const address of public_domain_addresses) {
+    if (public_domain_urls && public_domain_urls.length > 0) {
+      for (const url of public_domain_urls) {
         results.push({
           type: 'single',
           name: i18n('Public Domain URL'),
           description: i18n(
             'Use this url to access Push TX from anywhere via your public domain.',
           ),
-          value: `https://${address.hostname}#`,
+          value: url,
           copyable: true,
           masked: false,
           qr: true,
@@ -71,14 +71,20 @@ export const showUrls = sdk.Action.withoutInput(
 
       for (const [packageId, addresses] of byPackage) {
         const label = labelFromPackageId(packageId)
+        const pluginFilled = ui?.addressInfo?.filter({
+          predicate: (h) =>
+            h.metadata.kind === 'plugin' && h.metadata.packageId === packageId,
+        })
         for (const address of addresses) {
+          const url = pluginFilled?.toUrl(address)
+          if (!url) continue
           results.push({
             type: 'single',
             name: `${label} URL`,
             description: i18n(
               'Use this url to access NFC Push TX via this service.',
             ),
-            value: `https://${address.hostname}#`,
+            value: url,
             copyable: true,
             masked: false,
             qr: true,
@@ -88,19 +94,19 @@ export const showUrls = sdk.Action.withoutInput(
     }
 
     // --- mDNS (local .local addresses) ---
-    const local_addresses = ui?.addressInfo
+    const local_urls = ui?.addressInfo
       ?.filter({ kind: ['mdns'] })
-      .format('hostname-info')
+      .format()
 
-    if (local_addresses && local_addresses.length > 0) {
-      for (const address of local_addresses) {
+    if (local_urls && local_urls.length > 0) {
+      for (const url of local_urls) {
         results.push({
           type: 'single',
           name: i18n('Local URL'),
           description: i18n(
             'Use this url to setup NFC Push TX over LAN (with mDNS/.local support).',
           ),
-          value: `https://${address.hostname}#`,
+          value: url,
           copyable: true,
           masked: false,
           qr: true,
@@ -108,18 +114,18 @@ export const showUrls = sdk.Action.withoutInput(
       }
     }
 
-    // --- IPv4 ---
-    const ipv4_addresses = ui?.addressInfo
-      ?.filter({ kind: ['ipv4'] })
-      .format('hostname-info')
+    // --- IPv4 (public only) ---
+    const ipv4_urls = ui?.addressInfo
+      ?.filter({ kind: ['ipv4'], visibility: 'public' })
+      .format()
 
-    if (ipv4_addresses && ipv4_addresses.length > 0) {
-      for (const address of ipv4_addresses) {
+    if (ipv4_urls && ipv4_urls.length > 0) {
+      for (const url of ipv4_urls) {
         results.push({
           type: 'single',
           name: i18n('IPv4 URL'),
           description: i18n('Use this url to setup NFC Push TX over LAN.'),
-          value: `https://${address.hostname}#`,
+          value: url,
           copyable: true,
           masked: false,
           qr: true,

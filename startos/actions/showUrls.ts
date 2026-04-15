@@ -2,6 +2,11 @@ import { ActionResultMember } from '@start9labs/start-sdk/base/lib/osBindings'
 import { store } from '../fileModels/store.yaml'
 import { sdk } from '../sdk'
 
+// Capitalise a packageId for use as a label (e.g. 'cloudflared' → 'Cloudflared')
+function labelFromPackageId(packageId: string): string {
+  return packageId.charAt(0).toUpperCase() + packageId.slice(1)
+}
+
 export const showUrls = sdk.Action.withoutInput(
   // id
   'show-urls',
@@ -22,23 +27,12 @@ export const showUrls = sdk.Action.withoutInput(
   // execution function
   async ({ effects }) => {
     const ui = await sdk.serviceInterface.getOwn(effects, 'ui').const()
+    const results: ActionResultMember[] = []
+
+    // --- mDNS (local .local addresses) ---
     const local_addresses = ui?.addressInfo
       ?.filter({ kind: ['mdns'] })
       .format('hostname-info')
-    const ipv4_addresses = ui?.addressInfo
-      ?.filter({ kind: ['ipv4'] })
-      .format('hostname-info')
-
-    // Tor onion addresses are provided by the tor package via the url-v0 plugin.
-    // They appear as kind='plugin' with metadata.packageId === 'tor'.
-    const tor_addresses = ui?.addressInfo
-      ?.filter({
-        predicate: ({ metadata }) =>
-          metadata.kind === 'plugin' && metadata.packageId === 'tor',
-      })
-      .format('hostname-info')
-
-    const results: ActionResultMember[] = []
 
     if (local_addresses && local_addresses.length > 0) {
       for (const address of local_addresses) {
@@ -55,6 +49,11 @@ export const showUrls = sdk.Action.withoutInput(
       }
     }
 
+    // --- IPv4 ---
+    const ipv4_addresses = ui?.addressInfo
+      ?.filter({ kind: ['ipv4'] })
+      .format('hostname-info')
+
     if (ipv4_addresses && ipv4_addresses.length > 0) {
       for (const address of ipv4_addresses) {
         results.push({
@@ -69,18 +68,78 @@ export const showUrls = sdk.Action.withoutInput(
       }
     }
 
-    if (tor_addresses && tor_addresses.length > 0) {
-      for (const address of tor_addresses) {
+    // --- Private domain (LAN / StartOS gateway domain) ---
+    const private_domain_addresses = ui?.addressInfo
+      ?.filter({
+        predicate: ({ metadata }) => metadata.kind === 'private-domain',
+      })
+      .format('hostname-info')
+
+    if (private_domain_addresses && private_domain_addresses.length > 0) {
+      for (const address of private_domain_addresses) {
         results.push({
           type: 'single',
-          name: 'Tor URL',
-          description:
-            'Use this url to setup NFC Push TX over Tor (requires the Tor package).',
+          name: 'Private Domain URL',
+          description: 'Use this url to access Push TX via your private domain.',
           value: `https://${address.hostname}#`,
           copyable: true,
           masked: false,
           qr: true,
         })
+      }
+    }
+
+    // --- Public domain (clearnet domain) ---
+    const public_domain_addresses = ui?.addressInfo
+      ?.filter({
+        predicate: ({ metadata }) => metadata.kind === 'public-domain',
+      })
+      .format('hostname-info')
+
+    if (public_domain_addresses && public_domain_addresses.length > 0) {
+      for (const address of public_domain_addresses) {
+        results.push({
+          type: 'single',
+          name: 'Public Domain URL',
+          description:
+            'Use this url to access Push TX from anywhere via your public domain.',
+          value: `https://${address.hostname}#`,
+          copyable: true,
+          masked: false,
+          qr: true,
+        })
+      }
+    }
+
+    // --- Plugin-provided addresses (Tor, Cloudflared, etc.) ---
+    // Each installed plugin (identified by packageId) gets its own section.
+    const all_plugin_addresses = ui?.addressInfo
+      ?.filter({ kind: ['plugin'] })
+      .format('hostname-info')
+
+    if (all_plugin_addresses && all_plugin_addresses.length > 0) {
+      // Group by packageId
+      const byPackage = new Map<string, typeof all_plugin_addresses>()
+      for (const address of all_plugin_addresses) {
+        if (address.metadata.kind !== 'plugin') continue
+        const pkgId = address.metadata.packageId
+        if (!byPackage.has(pkgId)) byPackage.set(pkgId, [])
+        byPackage.get(pkgId)!.push(address)
+      }
+
+      for (const [packageId, addresses] of byPackage) {
+        const label = labelFromPackageId(packageId)
+        for (const address of addresses) {
+          results.push({
+            type: 'single',
+            name: `${label} URL`,
+            description: `Use this url to access Push TX via ${label}.`,
+            value: `https://${address.hostname}#`,
+            copyable: true,
+            masked: false,
+            qr: true,
+          })
+        }
       }
     }
 

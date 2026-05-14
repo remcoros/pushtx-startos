@@ -1,13 +1,26 @@
-# NFC Push TX
+# NFC Push TX Instructions
 
-This feature allows single-tap broadcast of freshly-signed transactions from a COLDCARD and hopefully others soon(tm).
+NFC Push TX lets you broadcast a freshly signed Bitcoin transaction from a COLDCARD hardware wallet with a single NFC tap. After signing, the COLDCARD shows an NFC animation. When you tap your phone to the device, the phone reads an NFC tag containing a URL with the signed transaction. Opening that URL in your phone's browser connects to your Bitcoin node and broadcasts the transaction.
 
-Once enabled with a URL, the COLDCARD will show the NFC animation after signing the transaction. When the user taps their phone, the phone will see an NFC tag with URL inside. That URL contains the signed transaction ready to go, and once opening in the mobile browser of the phone, that URL will load. The page will connect to your Bitcoin node and send the transaction on the public Bitcoin network.
+## First-time setup
 
-## Setting up Coldcard
+1. Run the **Configure** action and select the Bitcoin node to use for broadcasting (your local Bitcoin Core or testnet4 node).
+2. After saving, run **Show Push TX URLs** to retrieve the push URL.
+3. Enter the returned URL into your COLDCARD's NFC Push TX setting.
 
-This feature is available on Q and Mk4 and requires NFC to be enabled. On your Coldcard, see Settings > NFC Push Tx to enable.
+## COLDCARD configuration
 
-When enabling NFC Push TX in the Coldcard, you can use the QR scanner to scan the correct URL from the 'Properties' page in StartOS (click on the QR icon to show the QR code of the LAN or Tor url).
+On the COLDCARD, navigate to Settings > NFC Push TX and enter the URL shown by the **Show Push TX URLs** action.
 
-**Note:** do not use the URL from the 'Interfaces' page! Use the Tor or LAN url from the 'Properties' page instead. The url must end with a hashtag (#).
+## Actions
+
+- **Configure** - Select the Bitcoin node used for broadcasting.
+- **Show Push TX URLs** - Display the URL to enter into your COLDCARD.
+
+## Tor
+
+If Tor is installed, Push TX also generates a .onion URL. Both the clearnet and .onion URLs are shown by the **Show Push TX URLs** action. The COLDCARD can use either.
+
+## Upstream documentation
+
+For details on how the COLDCARD implements NFC Push TX, see: https://pushtx.org

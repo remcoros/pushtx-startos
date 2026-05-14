@@ -7,7 +7,6 @@ export const manifest = setupManifest({
   packageRepo: 'https://github.com/remcoros/pushtx-startos',
   upstreamRepo: 'https://github.com/remcoros/pushtx-startos',
   supportSite: 'https://github.com/remcoros/pushtx-startos/issues',
-  docsUrls: ['https://github.com/remcoros/pushtx-startos/blob/main/instructions.md'],
   marketingUrl: 'https://pushtx.org/',
   donationUrl: 'https://github.com/remcoros/',
   description: {

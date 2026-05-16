@@ -12,3 +12,4 @@ docker-images
 node_modules
 javascript/*
 ncc-cache
+*.lscache

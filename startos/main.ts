@@ -1,5 +1,5 @@
 import { sdk } from './sdk'
-import { parseCookie, uiPort } from './utils'
+import { bitcoinCoreNodes, parseCookie, uiPort } from './utils'
 import { store } from './fileModels/store.yaml'
 import { FileHelper } from '@start9labs/start-sdk'
 import { i18n } from './i18n'
@@ -44,20 +44,20 @@ export const main = sdk.setupMain(async ({ effects }) => {
     mounts,
     'main',
   )
-  
+
   let RPC_HOST = ''
   let RPC_USERNAME = ''
   let RPC_PASSWORD = ''
 
   if (conf.node.type == 'mainnet' || conf.node.type == 'testnet') {
-    RPC_HOST =
-      conf.node.type == 'mainnet'
-        ? 'bitcoind.startos'
-        : 'bitcoind-testnet.startos'
+    const node = bitcoinCoreNodes[conf.node.type]
+    RPC_HOST = node.rpcUrl
 
     // grab the RPC username and password from the .cookie file
     // also using .const() so that if the file changes, the service restarts
-    const cookie = await FileHelper.string(`${subcontainer.rootfs}/mnt/bitcoind/.cookie`)
+    const cookie = await FileHelper.string(
+      `${subcontainer.rootfs}/mnt/bitcoind/${node.cookiePath}`,
+    )
       .read()
       .const(effects)
     ;[RPC_USERNAME, RPC_PASSWORD] = parseCookie(cookie)

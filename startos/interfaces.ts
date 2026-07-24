@@ -1,9 +1,9 @@
 import { sdk } from './sdk'
-import { uiPort } from './utils'
+import { uiHostId, uiInterfaceId, uiPort } from './utils'
 import { i18n } from './i18n'
 
 export const setInterfaces = sdk.setupInterfaces(async ({ effects }) => {
-  const uiMulti = sdk.MultiHost.of(effects, 'main')
+  const uiMulti = sdk.MultiHost.of(effects, uiHostId)
   const uiMultiOrigin = await uiMulti.bindPort(uiPort, {
     protocol: 'http',
     addSsl: {},
@@ -11,11 +11,11 @@ export const setInterfaces = sdk.setupInterfaces(async ({ effects }) => {
 
   const ui = sdk.createInterface(effects, {
     name: i18n('NFC Push TX API'),
-    id: 'ui',
+    id: uiInterfaceId,
     description: i18n('NFC Push TX API'),
     type: 'api',
     schemeOverride: null,
-    masked: false,    
+    masked: false,
     username: null,
     path: '#',
     query: {},

@@ -4,13 +4,14 @@ import { sdk } from './sdk'
 export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
   const conf = await store.read().const(effects)
 
-  // Auto-detect Tor: include as a dependency if it is installed/running.
-  // This is opt-in — Tor is optional; PushTX works without it.
-  const torIp = await sdk.getContainerIp(effects, { packageId: 'tor' }).const()
-  const torDep = torIp
+  // Optional URL-plugin integration follows install state, not a private
+  // cross-package container address.
+  const torInstalled =
+    (await sdk.getStatus(effects, { packageId: 'tor' }).const()) !== null
+  const torDep = torInstalled
     ? {
         tor: {
-          kind: 'running' as const,
+          kind: 'exists' as const,
           versionRange: '>=0.4.9.5:0',
           healthChecks: [],
         },

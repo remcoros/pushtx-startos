@@ -1,7 +1,8 @@
-import { ActionResultMember } from '@start9labs/start-sdk/base/lib/osBindings'
+import { T } from '@start9labs/start-sdk'
 import { store } from '../fileModels/store.yaml'
 import { sdk } from '../sdk'
 import { i18n } from '../i18n'
+import { uiHostId, uiInterfaceId, uiPort } from '../utils'
 
 // Capitalise a packageId for use as a label (e.g. 'cloudflared' → 'Cloudflared')
 function labelFromPackageId(packageId: string): string {
@@ -27,9 +28,15 @@ export const showUrls = sdk.Action.withoutInput(
 
   // execution function
   async ({ effects }) => {
-    const ui = await sdk.serviceInterface.getOwn(effects, 'ui').const()
+    const ui = await sdk.host
+      .getOwn(
+        effects,
+        uiHostId,
+        (host) => host?.bindings[uiPort]?.interfaces[uiInterfaceId],
+      )
+      .const()
     const addresses = ui?.addressInfo?.nonLocal
-    const results: ActionResultMember[] = []
+    const results: T.ActionResultMember[] = []
 
     // --- Public domain (clearnet domain) ---
     const public_domain_urls = addresses
@@ -95,9 +102,7 @@ export const showUrls = sdk.Action.withoutInput(
     }
 
     // --- mDNS (local .local addresses) ---
-    const local_urls = addresses
-      ?.filter({ kind: ['mdns'] })
-      .format()
+    const local_urls = addresses?.filter({ kind: ['mdns'] }).format()
 
     if (local_urls && local_urls.length > 0) {
       for (const url of local_urls) {
@@ -116,9 +121,7 @@ export const showUrls = sdk.Action.withoutInput(
     }
 
     // --- IPv4 (LAN and WAN, excluding localhost and link-local) ---
-    const ipv4_urls = addresses
-      ?.filter({ kind: ['ipv4'] })
-      .format()
+    const ipv4_urls = addresses?.filter({ kind: ['ipv4'] }).format()
 
     if (ipv4_urls && ipv4_urls.length > 0) {
       for (const url of ipv4_urls) {

@@ -4,9 +4,11 @@ NFC Push TX lets you broadcast a freshly signed Bitcoin transaction from a COLDC
 
 ## First-time setup
 
-1. Run the **Configure** action and select the Bitcoin node to use for broadcasting (your local Bitcoin Core or testnet4 node).
+1. Run **Settings** and select the Bitcoin node to use for broadcasting, such as your local Bitcoin Core or testnet4 node.
 2. After saving, run **Show Push TX URLs** to retrieve the push URL.
 3. Enter the returned URL into your COLDCARD's NFC Push TX setting.
+
+If you choose a Bitcoin node on this StartOS server, Push TX keeps the connection up to date automatically.
 
 ## COLDCARD configuration
 
@@ -14,13 +16,13 @@ On the COLDCARD, navigate to Settings > NFC Push TX and enter the URL shown by t
 
 ## Actions
 
-- **Configure** - Select the Bitcoin node used for broadcasting.
+- **Settings** - Select the Bitcoin node used for broadcasting.
 - **Show Push TX URLs** - Display the URL to enter into your COLDCARD.
 
 ## Tor
 
-If Tor is installed, Push TX also generates a .onion URL. Both the clearnet and .onion URLs are shown by the **Show Push TX URLs** action. The COLDCARD can use either.
+If Tor is installed, Push TX also generates a `.onion` URL. **Show Push TX URLs** displays every available address, and the COLDCARD can use any of them.
 
 ## Upstream documentation
 
-For details on how the COLDCARD implements NFC Push TX, see: https://pushtx.org
+For details about NFC Push TX on COLDCARD, see [pushtx.org](https://pushtx.org).

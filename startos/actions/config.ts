@@ -1,10 +1,9 @@
 import { sdk } from '../sdk'
 import { T, utils } from '@start9labs/start-sdk'
 import { createDefaultStore, store } from '../fileModels/store.yaml'
-import { Variants } from '@start9labs/start-sdk/base/lib/actions/input/builder'
 import { i18n } from '../i18n'
 
-const { InputSpec, Value } = sdk
+const { InputSpec, Value, Variants } = sdk
 
 export const inputSpec = InputSpec.of({
   server: Value.dynamicUnion(async ({ effects }) => {

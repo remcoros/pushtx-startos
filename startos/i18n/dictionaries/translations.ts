@@ -6,6 +6,7 @@ export default {
     1: 'No configurado',
     2: 'La API Push TX está lista',
     3: 'La API Push TX no está accesible',
+    4: 'El nodo Bitcoin seleccionado no está disponible',
 
     // interfaces.ts
     100: 'API NFC Push TX',
@@ -47,6 +48,7 @@ export default {
     1: 'Nicht konfiguriert',
     2: 'Push TX API ist bereit',
     3: 'Push TX API ist nicht erreichbar',
+    4: 'Der ausgewählte Bitcoin-Knoten ist nicht verfügbar',
 
     // interfaces.ts
     100: 'NFC Push TX API',
@@ -88,6 +90,7 @@ export default {
     1: 'Nie skonfigurowano',
     2: 'API Push TX jest gotowe',
     3: 'API Push TX jest niedostępne',
+    4: 'Wybrany węzeł Bitcoin jest niedostępny',
 
     // interfaces.ts
     100: 'API NFC Push TX',
@@ -129,6 +132,7 @@ export default {
     1: 'Non configuré',
     2: "L'API Push TX est prête",
     3: "L'API Push TX est inaccessible",
+    4: 'Le nœud Bitcoin sélectionné est indisponible',
 
     // interfaces.ts
     100: 'API NFC Push TX',

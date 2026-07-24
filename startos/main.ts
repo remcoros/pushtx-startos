@@ -1,5 +1,5 @@
 import { sdk } from './sdk'
-import { bitcoinCoreNodes, parseCookie, uiPort } from './utils'
+import { bitcoinCoreNodes, bridgeAddress, parseCookie, uiPort } from './utils'
 import { store } from './fileModels/store.yaml'
 import { FileHelper } from '@start9labs/start-sdk'
 import { i18n } from './i18n'
@@ -36,7 +36,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
   }
 
   // main subcontainer
-  const subcontainer = await sdk.SubContainer.of(
+  const subcontainer = await sdk.SubContainer.eager(
     effects,
     {
       imageId: 'main',
@@ -51,7 +51,11 @@ export const main = sdk.setupMain(async ({ effects }) => {
 
   if (conf.node.type == 'mainnet' || conf.node.type == 'testnet') {
     const node = bitcoinCoreNodes[conf.node.type]
-    RPC_HOST = node.rpcUrl
+    const rpcAddress = await bridgeAddress(effects, node).const()
+    if (!rpcAddress) {
+      throw new Error(i18n('Selected Bitcoin node is unavailable'))
+    }
+    RPC_HOST = `http://${rpcAddress}`
 
     // grab the RPC username and password from the .cookie file
     // also using .const() so that if the file changes, the service restarts
@@ -85,14 +89,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
     ready: {
       display: 'Push TX API',
       fn: () =>
-        sdk.healthCheck.checkWebUrl(
-          effects,
-          'http://pushtx.startos:' + uiPort,
-          {
-            successMessage: i18n('Push TX API is ready'),
-            errorMessage: i18n('Push TX API is unreachable'),
-          },
-        ),
+        sdk.healthCheck.checkWebUrl(effects, 'http://127.0.0.1:' + uiPort, {
+          successMessage: i18n('Push TX API is ready'),
+          errorMessage: i18n('Push TX API is unreachable'),
+        }),
     },
     requires: [],
   })

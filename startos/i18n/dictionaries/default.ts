@@ -5,6 +5,7 @@ const dict = {
   'Not configured': 1,
   'Push TX API is ready': 2,
   'Push TX API is unreachable': 3,
+  'Selected Bitcoin node is unavailable': 4,
 
   // interfaces.ts
   'NFC Push TX API': 100,
@@ -24,18 +25,18 @@ const dict = {
   'Use this url to access NFC Push TX via this service.': 213,
 
   // actions/config.ts
-  'Node': 300,
+  Node: 300,
   'Bitcoin Node': 301,
   'Bitcoin Core': 302,
   'Bitcoin Core (testnet4)': 303,
-  'Custom': 304,
-  'Hostname': 305,
+  Custom: 304,
+  Hostname: 305,
   'RPC hostname for your Bitcoin node.': 306,
-  'Username': 307,
+  Username: 307,
   'RPC username for your Bitcoin node.': 308,
-  'Password': 309,
+  Password: 309,
   'RPC password for your Bitcoin node.': 310,
-  'Settings': 311,
+  Settings: 311,
   'Bitcoin Node settings': 312,
 
   // manifest/index.ts

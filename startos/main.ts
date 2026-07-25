@@ -1,5 +1,5 @@
 import { sdk } from './sdk'
-import { bitcoinCoreNodes, bridgeAddress, parseCookie, uiPort } from './utils'
+import { bitcoinCoreNodes, parseCookie, uiPort } from './utils'
 import { store } from './fileModels/store.yaml'
 import { FileHelper } from '@start9labs/start-sdk'
 import { i18n } from './i18n'
@@ -51,7 +51,14 @@ export const main = sdk.setupMain(async ({ effects }) => {
 
   if (conf.node.type == 'mainnet' || conf.node.type == 'testnet') {
     const node = bitcoinCoreNodes[conf.node.type]
-    const rpcAddress = await bridgeAddress(effects, node).const()
+    const rpcAddress = await sdk.host
+      .getBridgeAddress(effects, {
+        packageId: node.packageId,
+        hostId: node.hostId,
+        internalPort: node.internalPort,
+        ssl: false,
+      })
+      .const()
     if (!rpcAddress) {
       throw new Error(i18n('Selected Bitcoin node is unavailable'))
     }

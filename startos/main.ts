@@ -69,7 +69,12 @@ export const main = sdk.setupMain(async ({ effects }) => {
     const cookie = await FileHelper.string(
       `${subcontainer.rootfs}/mnt/bitcoind/${node.cookiePath}`,
     )
-      .read()
+      // Ignore removal during Bitcoin Core shutdown; restart only after a
+      // replacement cookie is written.
+      .read(
+        (cookie) => cookie,
+        (prev, next) => next === null || prev === next,
+      )
       .const(effects)
     ;[RPC_USERNAME, RPC_PASSWORD] = parseCookie(cookie)
   } else {

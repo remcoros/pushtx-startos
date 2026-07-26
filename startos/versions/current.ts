@@ -1,18 +1,18 @@
 import { VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '1.3.0:4',
+  version: '1.3.0:5',
   releaseNotes: {
     en_US:
-      'Updates Start SDK to 2.0.9, deduplicates SDK copies in package dependencies, and resolves connected service addresses more reliably.',
+      'Prevents unnecessary PushTX restarts while Bitcoin Core is shutting down.',
     es_ES:
-      'Actualiza Start SDK a 2.0.9, elimina copias duplicadas del SDK en las dependencias del paquete y resuelve de forma más fiable las direcciones de los servicios conectados.',
+      'Evita reinicios innecesarios de PushTX mientras Bitcoin Core se está apagando.',
     de_DE:
-      'Aktualisiert das Start SDK auf 2.0.9, entfernt doppelte SDK-Kopien in den Paketabhängigkeiten und ermittelt die Adressen verbundener Dienste zuverlässiger.',
+      'Verhindert unnötige PushTX-Neustarts beim Herunterfahren von Bitcoin Core.',
     pl_PL:
-      'Aktualizuje Start SDK do wersji 2.0.9, usuwa zduplikowane kopie SDK z zależności pakietu i pewniej ustala adresy połączonych usług.',
+      'Zapobiega niepotrzebnym restartom PushTX podczas wyłączania Bitcoin Core.',
     fr_FR:
-      'Met à jour Start SDK vers la version 2.0.9, déduplique les copies du SDK dans les dépendances du paquet et détermine plus fiablement les adresses des services connectés.',
+      "Évite les redémarrages inutiles de PushTX pendant l'arrêt de Bitcoin Core.",
   },
   migrations: {
     up: async ({ effects }) => {},
